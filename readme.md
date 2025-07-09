@@ -34,8 +34,6 @@ The server is highly customizable and can be deployed in any environment, allowi
 
 - [About](#about)
 - [Installation](#installation)
-  - [Standalone Installation](#installation-standalone)
-  - [Docker Installation](#installation-docker)
 - [Documentation](#documentation)
 - [Configuration](#configuration)
 - [Plugins](#plugins)
@@ -49,6 +47,8 @@ The server is highly customizable and can be deployed in any environment, allowi
 ## Installation
 
 The installation can be done in two ways, standalone where the system resources will be used natively and via docker where the software will be encapsulated in an isolated image. 
+
+**Note:** The Docker image has not been updated for the Vector Medea fork, please use the Standard Installation method, contributions are accepted for better Docker support!
 
 The standalone installation allows you to configure more parameters, such as the database name, the public key of the server or other aspects. On the other hand, the docker installation is simpler and more secure, so use docker if you are not sure which one to choose.
 
