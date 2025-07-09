@@ -62,17 +62,6 @@ To make a standalone installation you can use the following script. You can find
 curl https://raw.githubusercontent.com/JSKitty/Vector-Medea/refs/heads/main/scripts/install.sh --output install.sh && chmod +x install.sh && ./install.sh
 ```
 
-### Installation (docker)
-
-To install and run the server using docker you can use the following script.
-
-```bash
-git clone https://github.com/JSKitty/Vector-Medea.git && cd nostrcheck-server && sudo docker-compose up -d
-
-```
-
-[Video demonstration](https://github.com/quentintaranpino/nostrcheck-api-ts/assets/125748180/dff0933a-0325-4c0b-bad5-5e2702337ea0)
-
 ## Documentation
 
 See documentation [here](https://github.com/quentintaranpino/nostrcheck-api-ts/blob/main/DOCS.md)

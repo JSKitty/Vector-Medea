@@ -6,7 +6,7 @@ echo "$BASEDIR"
 
 readonly E_BADARGS=65
 readonly version="0.2.6.6"
-readonly date="20240914"
+readonly date="20250709"
 
 # Variables
 NODE_MAJOR=20
@@ -44,7 +44,7 @@ echo "███████║███████╗██║  ██║ ╚�
 echo "╚══════╝╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝"
 echo ""
 echo "══════════════════════════════════════════════════════════════════════════════"
-echo " Nostrcheck-server installation script v$version"
+echo " Vector Medea installation script v$version"
 echo ""
 echo "📅 Last updated: $date"
 echo "🔗 Project repository: https://github.com/JSKitty/Vector-Medea/"
@@ -173,7 +173,7 @@ echo ""
 echo "🔄 Cloning the repository from $REPO_URL (branch: $REPO_BRANCH)..."
 echo ""
 git clone -b "$REPO_BRANCH" --single-branch "$REPO_URL" || { echo "❌ Failed to clone the repository"; exit 1; }
-cd "nostrcheck-server" || { echo "❌ Failed to enter the repository directory"; exit 1; }
+cd "Vector-Medea" || { echo "❌ Failed to enter the repository directory"; exit 1; }
 echo "✅ Repository cloned and ready for installation!"
 sleep 3
 
@@ -914,8 +914,8 @@ if [ "$SYSTEMD_SERVICE_CREATED" = "yes" ]; then
     echo " ║     👉 To enable on boot:     sudo systemctl enable nostrcheck                          ║"
     echo " ║     👉 To disable on boot:    sudo systemctl disable nostrcheck                         ║"
 else
-    echo " ║  🚀 You can now start the Nostrcheck server by running the following command:           ║"
-    echo " ║     👉 cd nostrcheck-server && npm run start                                            ║"
+    echo " ║  🚀 You can now start the Vector Medea server by running the following command:           ║"
+    echo " ║     👉 cd Vector-Medea && npm run start                                            ║"
 fi
 
 echo " ║                                                                                         ║"
