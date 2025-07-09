@@ -289,44 +289,8 @@ const uploadMedia = async (req: Request, res: Response, version:string): Promise
 		}
 	}
 
-	// Write temp file to disk (for ffmpeg and blurhash)
-	if (processFile){
-		filedata.conversionInputPath = await saveTmpFile(filedata.filename, file.buffer);
-		if (filedata.conversionInputPath == "") {
-			if(version != "v2"){return res.status(500).send({"result": false, "description" : "Internal server error."});}
-			const result: ResultMessagev2 = {
-				status: MediaStatus[1],
-				message: "Internal server error.",
-			};
-			return res.status(500).send(result);
-		}
-
-		// generate blurhash
-		if (makeBlurhash) {
-			if (filedata.originalmime.toString().startsWith("image")){
-				logger.debug(filedata.originalmime.toString());
-				filedata.blurhash = await generateBlurhash(filedata.conversionInputPath);
-
-				// If can't generate blurhash, we return an error and delete the file
-				if (filedata.blurhash == "") {
-					if(version != "v2"){return res.status(500).send({"result": false, "description" : "File could not be processed"});}
-
-					const result: ResultMessagev2 = {
-						status: MediaStatus[1],
-						message: "File could not be processed",
-					};
-					//await deleteFile(filedata.conversionInputPath);
-					return res.status(500).send(result);
-				}
-			}
-		}
-
-		// Media dimensions
-		const dimensions = await getMediaDimensions(filedata.conversionInputPath, filedata);
-		dimensions? filedata.width = dimensions.width : 640;
-		dimensions? filedata.height = dimensions.height : 480;
-		dimensions? filedata.newFileDimensions = dimensions.width + "x" + dimensions.height : "640x480";
-	}
+	// Write temp file to disk (ffmpeg and blurhash processing were removed for Vector support)
+	filedata.conversionInputPath = await saveTmpFile(filedata.filename, file.buffer);
 
 	// Add file to mediafiles table
 	if (insertfiledb) {
