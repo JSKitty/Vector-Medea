@@ -30,7 +30,7 @@ const isNIP98Valid = async (authevent: Event, req: Request, checkAdminPrivileges
 		return {status: "error", message: "Auth header event kind is not 27235", authkey: "", pubkey: "", kind: 0};
 	}
 
-	// Check if created_at is within a reasonable time window (60 seconds)
+	// Check if created_at is within a reasonable time window (600 seconds or 10 minutes)
 	try {
 		let created_at = authevent.created_at;
 		const now = Math.floor(Date.now() / 1000);
@@ -39,7 +39,7 @@ const isNIP98Valid = async (authevent: Event, req: Request, checkAdminPrivileges
 			created_at = now - 30;
 		} 
 		const diff = now - created_at;
-		if (diff > 60) {
+		if (diff > 600) {
 			logger.warn(
 				"RES -> 400 Bad request - Auth header event created_at is not within a reasonable time window",
 				"|",
