@@ -46,7 +46,7 @@ const serverBanner = (app: Application) : string => {
 	);
 	banner.push(`Nostrcheck server started, version ${app.get("version")}`);
 	banner.push(`Running at http://localhost:${app.get("config.server")["port"]} in ${app.get("config.environment")} mode`);
-	banner.push(`Documentation: https://github.com/quentintaranpino/nostrcheck-server/blob/main/DOCS.md`)
+	banner.push(`Documentation: https://github.com/JSKitty/Vector-Medea/blob/main/DOCS.md`)
 	banner.push("");
 	banner.push("Press CTRL-C to stop the server");
 	banner.push("");

@@ -1,6 +1,6 @@
 # Nostrcheck server
-![Contributors](https://img.shields.io/github/contributors/quentintaranpino/nostrcheck-server) 
-![License](https://img.shields.io/github/license/quentintaranpino/nostrcheck-server)
+![Contributors](https://img.shields.io/github/contributors/JSKitty/Vector-Medea) 
+![License](https://img.shields.io/github/license/JSKitty/Vector-Medea)
 
 <p align="center">
 <img src= "https://github.com/quentintaranpino/nostrcheck-api-ts/assets/125748180/b4a7a4c3-938f-4f60-af81-3af4e5178ec4">
@@ -59,7 +59,7 @@ In either case, all parameters can be modified using the settings page in the se
 To make a standalone installation you can use the following script. You can find the code [here](https://github.com/quentintaranpino/nostrcheck-api-ts/blob/main/scripts/install.sh)
 
 ```
-curl https://raw.githubusercontent.com/quentintaranpino/nostrcheck-server/refs/heads/main/scripts/install.sh --output install.sh && chmod +x install.sh && ./install.sh
+curl https://raw.githubusercontent.com/JSKitty/Vector-Medea/refs/heads/main/scripts/install.sh --output install.sh && chmod +x install.sh && ./install.sh
 ```
 
 ### Installation (docker)
@@ -67,7 +67,7 @@ curl https://raw.githubusercontent.com/quentintaranpino/nostrcheck-server/refs/h
 To install and run the server using docker you can use the following script.
 
 ```bash
-git clone https://github.com/quentintaranpino/nostrcheck-server.git && cd nostrcheck-server && sudo docker-compose up -d
+git clone https://github.com/JSKitty/Vector-Medea.git && cd nostrcheck-server && sudo docker-compose up -d
 
 ```
 

@@ -16,7 +16,7 @@ USER="nostrcheck"
 MEDIAPATH="files/"
 PUBKEY=""
 SECRETKEY=""
-REPO_URL="https://github.com/quentintaranpino/nostrcheck-server.git"
+REPO_URL="https://github.com/JSKitty/Vector-Medea.git"
 REPO_BRANCH="main"
 PACKAGES="nginx git redis-server mariadb-server mariadb-client ffmpeg jq certbot python3-certbot-nginx python3 python3-pip python3-dev python3-venv pkg-config libjpeg-dev zlib1g-dev libssl-dev"
 
@@ -47,7 +47,7 @@ echo "════════════════════════�
 echo " Nostrcheck-server installation script v$version"
 echo ""
 echo "📅 Last updated: $date"
-echo "🔗 Project repository: https://github.com/quentintaranpino/nostrcheck-server/"
+echo "🔗 Project repository: https://github.com/JSKitty/Vector-Medea/"
 echo "📝 License: MIT"
 echo ""
 echo "📢 This script will install and configure the Nostrcheck server on your system."
@@ -195,17 +195,28 @@ echo "🔄 Activating virtual environment..."
 source "$VENV_DIR/bin/activate" || { echo "❌ Failed to activate virtual environment"; exit 1; }
 
 install_packages() {
-    echo "🔄 Installing transformers==$TRANSFORMERS_VERSION..."
-    pip install transformers==$TRANSFORMERS_VERSION || { echo "❌ Failed to install transformers"; exit 1; }
-    
-    echo "🔄 Installing Flask==$FLASK_VERSION..."
-    pip install Flask==$FLASK_VERSION || { echo "❌ Failed to install Flask"; exit 1; }
+    # Ask user for confirmation
+    echo "Would you like to install Python ML dependencies? (For Vector, this is typically NOT applicable, due to its encrypted nature)"
+    read -p "Install dependencies? (y/n): " -n 1 -r
+    echo ""
 
-    echo "🔄 Installing Pillow==$PILLOW_VERSION..."
-    pip install Pillow==$PILLOW_VERSION || { echo "❌ Failed to install Pillow"; exit 1; }
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        echo "🔄 Installing transformers==$TRANSFORMERS_VERSION..."
+        pip install transformers==$TRANSFORMERS_VERSION || { echo "❌ Failed to install transformers"; exit 1; }
 
-    echo "🔄 Installing torch==$TORCH_VERSION..."
-    pip install torch==$TORCH_VERSION  || { echo "❌ Failed to install torch"; exit 1; }
+        echo "🔄 Installing Flask==$FLASK_VERSION..."
+        pip install Flask==$FLASK_VERSION || { echo "❌ Failed to install Flask"; exit 1; }
+
+        echo "🔄 Installing Pillow==$PILLOW_VERSION..."
+        pip install Pillow==$PILLOW_VERSION || { echo "❌ Failed to install Pillow"; exit 1; }
+
+        echo "🔄 Installing torch==$TORCH_VERSION..."
+        pip install torch==$TORCH_VERSION  || { echo "❌ Failed to install torch"; exit 1; }
+
+        echo "✅ All dependencies installed successfully!"
+    else
+        echo "⏭️  Skipping Python ML dependencies installation."
+    fi
 }
 
 install_packages
@@ -548,6 +559,11 @@ echo "════════════════════════�
 echo ""
 
 sudo tee /etc/nginx/sites-available/$HOST.conf > /dev/null <<EOF
+map \$http_upgrade \$connection_upgrade {
+    default upgrade;
+    '' close;
+}
+
 server {
     listen 80;
     server_name $HOST;
@@ -559,30 +575,29 @@ server {
         proxy_pass http://localhost:3000;
         proxy_http_version 1.1;
         proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host \$host;
+        proxy_set_header Connection "upgrade";
     }
 
     # API redirect for nostr.json requests
     location /.well-known/nostr.json {
-      proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-      proxy_set_header X-Forwarded-Proto \$scheme;
-      proxy_set_header Host \$host;
-      proxy_pass http://localhost:3000/api/v2/nostraddress;
-      proxy_http_version 1.1;
-      proxy_set_header Upgrade \$http_upgrade;
-      proxy_set_header Connection "upgrade";
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Host \$host;
+        proxy_pass http://localhost:3000/api/v2/nostraddress;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
     }
 
     # API redirect for nip96.json requests
     location /.well-known/nostr/nip96.json {
-      proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-      proxy_set_header X-Forwarded-Proto \$scheme;
-      proxy_set_header Host \$host;
-      proxy_pass http://127.0.0.1:3000/api/v2/nip96;
-      proxy_http_version 1.1;
-      proxy_set_header Upgrade \$http_upgrade;
-      proxy_set_header Connection "upgrade";
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Host \$host;
+        proxy_pass http://127.0.0.1:3000/api/v2/nip96;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
     }
 
     # API redirect for lightning redirect requests
@@ -598,55 +613,54 @@ server {
 
     # API redirect for media URL requests
     location /media {
-       proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-       proxy_set_header X-Forwarded-Proto \$scheme;
-       proxy_set_header Host \$host;
-       proxy_pass http://127.0.0.1:3000/api/v2/media;
-       proxy_http_version 1.1;
-       proxy_set_header Upgrade \$http_upgrade;
-       proxy_set_header Connection "upgrade";
-    }
-
-    location /upload {
-       proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-       proxy_set_header X-Forwarded-Proto \$scheme;
-       proxy_set_header Host \$host;
-       proxy_pass http://127.0.0.1:3000/api/v2/media/upload;
-       proxy_http_version 1.1;
-       proxy_set_header Upgrade \$http_upgrade;
-       proxy_set_header Connection "upgrade";
-    }
-
-    location /list {
-       proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-       proxy_set_header X-Forwarded-Proto \$scheme;
-       proxy_set_header Host \$host;
-       proxy_pass http://127.0.0.1:3000/api/v2/media/list;
-       proxy_http_version 1.1;
-       proxy_set_header Upgrade \$http_upgrade;
-       proxy_set_header Connection "upgrade";
-    }
-
-    location /mirror {
-       proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
-       proxy_set_header X-Forwarded-Proto \$scheme;
-       proxy_set_header Host \$host;
-       proxy_pass http://127.0.0.1:3000/api/v2/media/mirror;
-       proxy_http_version 1.1;
-       proxy_set_header Upgrade \$http_upgrade;
-       proxy_set_header Connection "upgrade";
-    }
-
-    location ~ ^/([a-fA-F0-9]{64})(\.[a-zA-Z0-9]+)?(/([a-fA-F0-9]{64})(\.[a-zA-Z0-9]+)?)?$ {
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_set_header Host $host;
-        proxy_pass http://127.0.0.1:3000/api/v2/media/mirror;
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Host \$host;
+        proxy_pass http://127.0.0.1:3000/api/v2/media;
         proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Upgrade \$http_upgrade;
         proxy_set_header Connection "upgrade";
     }
 
+    location /upload {
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Host \$host;
+        proxy_pass http://127.0.0.1:3000/api/v2/media/upload;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    location /list {
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Host \$host;
+        proxy_pass http://127.0.0.1:3000/api/v2/media/list;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    location /mirror {
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Host \$host;
+        proxy_pass http://127.0.0.1:3000/api/v2/media/mirror;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
+
+    location ~ "^/([a-fA-F0-9]{64})(\.[a-zA-Z0-9]+)?(/([a-fA-F0-9]{64})(\.[a-zA-Z0-9]+)?)?$" {
+        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto \$scheme;
+        proxy_set_header Host \$host;
+        proxy_pass http://127.0.0.1:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade \$http_upgrade;
+        proxy_set_header Connection "upgrade";
+    }
 }
 
 # Additional server block for cdn.$HOST
@@ -906,7 +920,7 @@ fi
 
 echo " ║                                                                                         ║"
 echo " ║  📄 Server Documentation:                                                               ║"
-echo " ║     📝 https://github.com/quentintaranpino/nostrcheck-server/blob/main/DOCS.md          ║"
+echo " ║     📝 https://github.com/JSKitty/Vector-Medea/blob/main/DOCS.md          ║"
 echo " ║                                                                                         ║"
 echo " ║  💖 If you like this project, please consider supporting its development:               ║"
 echo " ║     🔗 https://nostrcheck.me/about/support-us.php                                       ║"
